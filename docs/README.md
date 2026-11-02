@@ -6,6 +6,7 @@ This folder is the Obsidian vault content and the Git-versioned system specifica
 
 - [System blueprint](system/README.md)
 - [National operating picture and service map](system/operating-picture/README.md)
+- [National capacity and business feasibility](business-planning/README.md)
 - [Citizens and life stages](citizens/README.md)
 - [Governance, authority, and project roles](governance/README.md)
 - [Data governance and measurement](data-and-measurement/README.md)

@@ -68,5 +68,7 @@ Separate the measure being reported: licensed professionals, practicing headcoun
 
 Connect aggregate qualification and training flows to independently published job listings and employer skills demand so graduates can explore possible pathways. Keep personal credentials and portfolios user-controlled; an institution must not gain access merely because its data appears in a national dashboard.
 
+The local [national-capacity planner](../../business-planning/README.md) demonstrates self-declared skill tags matched against example needs such as irrigation maintenance, emergency readiness, school repair, healthcare training and garment production. The profile is browser-local and optional; it is not a workforce register. Any future national aggregation needs explicit opt-in, purpose/retention rules, suppression thresholds, verified-source coverage for institution counts, and a human-operated recruitment or project process. No global score, automatic assignment or inference about availability is permitted.
+
 Public opening hours may be planned using anonymized service transactions, published capacity, and voluntary aggregate time-use research. Do not routinely collect named people’s employer schedules or attempt to infer leisure from personal accounts, movement, or phone activity. Review effects on care work, worker health, night/weekend premiums, transport availability and service access before changing a schedule. See the [operating-picture contracts](../../system/operating-picture/README.md).
 

@@ -15,6 +15,7 @@ New reports stay private to the submitter and reviewers until a reviewer moves t
 - [National operating picture and system services](docs/system/operating-picture/README.md)
 - [Citizen experience, rights, and life stages](docs/citizens/README.md)
 - [Personal household balance canvas](docs/citizens/household-balance/README.md)
+- [National capacity and business feasibility](docs/business-planning/README.md)
 - [Governance and project authority](docs/governance/README.md)
 - [Data governance and measurement](docs/data-and-measurement/README.md)
 - [Service architecture](docs/architecture/README.md)
@@ -111,7 +112,7 @@ The domain chapters describe a long-term national service landscape. They do not
 
 ## Current state
 
-The target repository had only its starter README when audited. No React, Fastify, Prisma, Supabase, database schema, or running service was present to reuse. A local workflow scaffold and a national control-room prototype now exist under apps, services, packages, and infra. Every D01–D20 domain has a small browser-local tool or a link to an existing workspace. The dedicated citizen household balance canvas lets a person change income, taxes, family size, diet, habits, prices, quantities and domestic/external destination estimates; its fictional values remain in browser storage and are not sent to services. Prototype records and figures are fictional/local; no national feeds, AI reviewer, specialist registry, price service, or trade service is connected. This is not a production government system and still needs security, legal, accessibility, data-source, operations, and human review. Earlier planning files were reviewed in the adjacent workspace; useful domain, ontology, workflow, and control-loop material is reconciled into this library. The old drafts are not authoritative when they conflict with decisions above; the reconciliation log records material conflicts and open questions.
+The target repository had only its starter README when audited. No React, Fastify, Prisma, Supabase, database schema, or running service was present to reuse. A local workflow scaffold and a national control-room prototype now exist under apps, services, packages, and infra. Every D01–D20 domain has a small browser-local tool or a link to an existing workspace. The operating picture now frames country functions as national needs, required outputs, capacity and skills, voluntary matching, authorized delivery and measured results. A tailoring-shop feasibility workspace models startup capital, ongoing costs, production capacity, public-market price comparisons, break-even, scenarios and a conditional authority checklist. The separate citizen household balance canvas remains a personal budgeting tool. Prototype assumptions stay in browser storage; no national workforce, price, demand, licensing or supply-chain feeds are connected. This is not a production government system and still needs security, legal, accessibility, data-source, operations, and human review. Earlier planning files were reviewed in the adjacent workspace; useful domain, ontology, workflow, and control-loop material is reconciled into this library. The old drafts are not authoritative when they conflict with decisions above; the reconciliation log records material conflicts and open questions.
 
 ## Contributing to the blueprint
 

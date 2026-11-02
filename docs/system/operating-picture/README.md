@@ -10,6 +10,28 @@ The public interface can be available nationally from the beginning. Real integr
 
 PolisOS can join signals that have an explicit owner, purpose, source, method, time window, geographic scope, uncertainty, and correction path. It can reveal a gap, bring people together, compare options, model scenarios, and track an authorized action. It cannot turn a metric, model, majority, or project role into legal authority by itself.
 
+## National capability operating model
+
+Design the app around the work a country must sustain: produce food and essential goods; maintain energy, water, transport and public infrastructure; care for health and teach; respond to police, fire and medical emergencies; administer law, budgets and public services; protect and defend; and grow businesses, tourism and exports. For each function, map the public outcome, inputs, workforce and assets, geographic coverage, operational dependencies, responsible owner, funding path, risk and measured result.
+
+The coordinating chain is **need → required outcome → skills/assets → voluntary match or verified supplier → feasibility and budget → lawful authorization → delivery and maintenance → outcome review**. A skills match shows why a person's self-declared capability may fit a task. It does not rank people, establish professional authorization, create an employment decision, or assign anyone. Public-workforce baselines must use institution-owned and professionally defined aggregates; personal profiles are separately opt-in.
+
+```mermaid
+flowchart LR
+  N[Service or production need] --> O[Desired output and standard]
+  O --> C[Required people, skills, assets and inputs]
+  C --> G[Compare demand with safe capacity aggregates]
+  G --> M[Offer a transparent, voluntary match]
+  M --> F[Check business/project feasibility and dependencies]
+  F --> A[Named lawful authority and budget]
+  A --> D[Deliver, operate and maintain]
+  D --> E[Measure access, quality, cost, resilience and impact]
+  E --> N
+  M -. person chooses .-> V[Opt in, decline or ask for correction]
+```
+
+The first implementation adds a local skills-to-needs illustration and a tailoring-shop feasibility planner. Neither has a national feed. The business planner estimates startup capital, monthly costs, feasible production, market-price comparisons and break-even, then lets the user track conditional approvals. It never asserts that the sample workshop's approvals, prices or demand are real. The [business feasibility blueprint](../../business-planning/README.md) defines the model and its limits.
+
 The core operational cycle is:
 
 ```mermaid
@@ -35,6 +57,7 @@ flowchart LR
 | National control room | D10, D12, D13, D16 | Published indicators, source freshness, service status, open decisions and delivery milestones | Domain status, provenance coverage, exceptions, decision and project links | A dashboard is a read model; it cannot dispatch public authority or hide uncertainty |
 | Public deliberation and evidence | D03, D10, D11, D16 | Questions, arguments, citations, counterarguments, corrections and review history | Topic, claim, argument, source, support, review note, resolution | Support counts show participation, not truth or citizen merit; AI output is advisory and contestable |
 | Workforce and specialist capacity | D04, D09, D10, D12 | Aggregated qualifications, staffing, vacancies, training flow, location and time-limited availability | Capacity aggregate by taxonomy/region/period; skills pathway; gap report | No universal worker roster, named shift tracking, employment score or automatic deployment |
+| Enterprise feasibility and productive capacity | D04, D07, D09, D14, D17 | User-entered capital, premises, utilities, workforce costs, production rate, comparable prices and conditional approval status | Startup estimate, operating cost, capacity-constrained output, contribution margin and review checklist | A scenario is not a forecast, loan decision, permit approval or guarantee of customers; see [business planning](../../business-planning/README.md) |
 | Prices and affordability | D04, D05, D12, D16 | Official tariffs, licensed market series, representative surveys and voluntary price observations | Comparable price observation, basket series, affordability context, source coverage | Price signals request review; they do not set or enforce prices |
 | Jobs, employers and opportunities | D04, D09, D10, D16 | Verified public vacancies, employer and training listings, occupation demand and expiry | Job opening, skills, region, training pathway, business opportunity | A listing is not a guarantee and civic activity/profile data are not hiring inputs |
 | Production, imports, exports and supply chains | D04, D07, D08, D13, D17, D20 | Resource origin, batch, transformation, logistics, inventory dependencies, import/export and end-of-life | Resource batch, production step, custody link, aggregated trade flow, risk note | Commercial, worker and security-sensitive information is access-controlled or aggregated |

@@ -1,7 +1,9 @@
 import { FormEvent, useState } from "react";
 import { DomainWorkbench } from "./DomainWorkbench";
+import { CapacityPlanner } from "./CapacityPlanner";
+import { BusinessPlanner } from "./BusinessPlanner";
 
-type ModuleId = "overview" | "domains" | "debates" | "people" | "prices" | "jobs" | "food" | "supply" | "tourism" | "time";
+type ModuleId = "overview" | "domains" | "debates" | "people" | "prices" | "jobs" | "enterprise" | "food" | "supply" | "tourism" | "time";
 type Side = "PRO" | "CON";
 
 interface Argument {
@@ -77,9 +79,10 @@ const modules: { id: ModuleId; label: string; icon: string; description: string 
   { id: "overview", label: "Imagine nationala", icon: "◫", description: "Sinteza sistemelor" },
   { id: "domains", label: "Harta D01–D20", icon: "▦", description: "Toate domeniile nationale" },
   { id: "debates", label: "Dezbateri si dovezi", icon: "⇄", description: "Argumente, surse, evaluare" },
-  { id: "people", label: "Capacitate profesionala", icon: "◎", description: "Specialisti si acoperire" },
+  { id: "people", label: "Nevoi si competente", icon: "◎", description: "Capacitati, competente, echipe" },
   { id: "prices", label: "Preturi si accesibilitate", icon: "¤", description: "Bunuri si servicii esentiale" },
   { id: "jobs", label: "Munca si oportunitati", icon: "↗", description: "Posturi, competente, afaceri" },
+  { id: "enterprise", label: "Simulare de afaceri", icon: "▤", description: "Costuri, piata, autorizari" },
   { id: "food", label: "Agricultura si hrana", icon: "⌁", description: "Productie, intrari si rezilienta" },
   { id: "supply", label: "Productie si comert", icon: "⌁", description: "Import, transformare, export" },
   { id: "tourism", label: "Turism si locuri", icon: "⌖", description: "Atractii si capacitate locala" },
@@ -195,7 +198,8 @@ export function ControlRoom({ canParticipate, onEnterDemo, onOpenWorkflow }: {
         {activeModule === "overview" && <Overview onSelect={setActiveModule} onOpenWorkflow={onOpenWorkflow} />}
         {activeModule === "domains" && <DomainWorkbench onOpenModule={(id) => setActiveModule(id)} onOpenWorkflow={onOpenWorkflow} />}
         {activeModule === "debates" && <Debates debates={debates} activeDebate={activeDebate} onSelectDebate={setActiveDebateId} onAddArgument={addArgument} onSupport={toggleSupport} onResetDemo={resetDebateData} canParticipate={canParticipate} onEnterDemo={onEnterDemo} />}
-        {activeModule === "people" && <SpecialistCapacity />}
+        {activeModule === "people" && <CapacityPlanner />}
+        {activeModule === "enterprise" && <BusinessPlanner />}
         {activeModule === "prices" && <PriceObservatory />}
         {activeModule === "jobs" && <JobsAndSkills />}
         {activeModule === "food" && <AgricultureAndFood />}
@@ -213,19 +217,30 @@ function ModuleHeading({ eyebrow, title, copy }: { eyebrow: string; title: strin
 
 function Overview({ onSelect, onOpenWorkflow }: { onSelect: (id: ModuleId) => void; onOpenWorkflow: () => void }) {
   const cards: { id: ModuleId; code: string; title: string; state: string; detail: string }[] = [
-    { id: "people", code: "D09", title: "Oameni si competente", state: "Model agregat", detail: "Specialitati, regiune, flux de formare" },
+    { id: "people", code: "D09", title: "Nevoi si competente", state: "Potrivire voluntara demo", detail: "Misiuni, competente declarate, echipe" },
     { id: "prices", code: "D04", title: "Costul vietii", state: "Sursa neconectata", detail: "Bunuri, utilitati si servicii de baza" },
     { id: "jobs", code: "D04", title: "Munca si oportunitati", state: "Sursa neconectata", detail: "Posturi, competente cerute, angajatori" },
+    { id: "enterprise", code: "D04", title: "Crearea unei afaceri", state: "Model local", detail: "Investitii, prag de rentabilitate, verificari" },
     { id: "food", code: "D04 · D08", title: "Agricultura si hrana", state: "Blueprint de sistem", detail: "Intrari, productie, depozitare, acces" },
     { id: "supply", code: "D07", title: "Productie si comert", state: "Pilot de modelare", detail: "Origine, transformare, import si export" },
     { id: "tourism", code: "D04", title: "Turism si economie locala", state: "Sursa neconectata", detail: "Sezonalitate, capacitate, accesibilitate" },
     { id: "time", code: "D05", title: "Programul serviciilor", state: "Semnal agregat demo", detail: "Ore de varf si ferestre de acces" }
   ];
+  const missions: { id: ModuleId; icon: string; title: string; output: string; detail: string }[] = [
+    { id: "food", icon: "⌁", title: "Cultivă și procesează", output: "Hrană, apă, energie și resurse", detail: "Agricultură · procesare · depozitare" },
+    { id: "supply", icon: "▤", title: "Produce și exportă", output: "Bunuri, servicii și venituri din export", detail: "Industrie · lanțuri · comerț" },
+    { id: "domains", icon: "⌂", title: "Construiește și întreține", output: "Clădiri, drumuri, căi ferate și utilități", detail: "Infrastructură · mentenanță · reparații" },
+    { id: "people", icon: "✚", title: "Îngrijește și educă", output: "Sănătate, educație și dezvoltare", detail: "Personal calificat · servicii · acces" },
+    { id: "people", icon: "!", title: "Răspunde la urgențe", output: "Poliție, pompieri, paramedici și coordonare", detail: "Pregătire · intervenție · recuperare" },
+    { id: "domains", icon: "§", title: "Administrează și finanțează", output: "Bugete, legi, achiziții și servicii publice", detail: "Instituții · finanțe · audit" },
+    { id: "domains", icon: "⬡", title: "Protejează și apără", output: "Apărare, securitate cibernetică și reziliență", detail: "Instituții autorizate · informații protejate" },
+    { id: "enterprise", icon: "↗", title: "Pornește și dezvoltă afaceri", output: "Locuri de muncă, producție și export", detail: "Capital · competențe · aprobări · piață" }
+  ];
   return <>
-    <div className="module-topline"><div><p className="os-eyebrow">Control room / Sinteza</p><h2>Bucla de operare publica</h2></div><span className="status-chip status-chip-warn">PROTOTIP · FARA COMANDA AUTOMATA</span></div>
+    <div className="module-topline"><div><p className="os-eyebrow">CONTROL ROOM / OPERAREA ȚĂRII</p><h2>Nevoi esențiale → capacitate → rezultate</h2></div><span className="status-chip status-chip-warn">PROTOTIP · FĂRĂ COMANDĂ AUTOMATĂ</span></div>
     <div className="os-kpi-grid">
       <Kpi label="Domenii in blueprint" value="20" detail="Fiecare cu proprietar si masuratori" />
-      <Kpi label="Module de sistem in prototip" value="10" detail="Interfete demonstrative, nu servicii" />
+      <Kpi label="Module de sistem in prototip" value="11" detail="Interfete demonstrative, nu servicii" />
       <Kpi label="Fluxuri nationale conectate" value="0" detail="Nicio sursa live sau institutionala" />
       <Kpi label="Decizii automate" value="0" detail="Masurile cer analiza umana" />
     </div>
@@ -249,8 +264,15 @@ function Overview({ onSelect, onOpenWorkflow }: { onSelect: (id: ModuleId) => vo
         <button className="text-button" onClick={onOpenWorkflow}>Deschide fluxul de probleme si proiecte <span>→</span></button>
       </section>
     </div>
+    <section className="national-missions-panel">
+      <div className="mission-section-heading"><div><p className="os-eyebrow">CE TREBUIE SĂ POATĂ FACE ȚARA</p><h2>Funcții naționale și rezultate de susținut</h2><p>Fiecare funcție depinde de oameni, competențe, infrastructură, aprovizionare, finanțare și instituții răspunzătoare.</p></div><span>8 funcții conectate</span></div>
+      <div className="national-mission-grid">{missions.map((mission) => <button className="national-mission-card" key={mission.title} onClick={() => onSelect(mission.id)}>
+        <span className="mission-icon">{mission.icon}</span><div><strong>{mission.title}</strong><span>{mission.output}</span><small>{mission.detail}</small></div><b>→</b>
+      </button>)}</div>
+      <div className="mission-operating-loop"><span>OBSERVĂ NEVOIA</span><b>→</b><span>MĂSOARĂ CAPACITATEA</span><b>→</b><span>GĂSEȘTE LACUNA</span><b>→</b><span>ORGANIZEAZĂ LUCRAREA</span><b>→</b><span>VERIFICĂ REZULTATUL</span></div>
+    </section>
     <section className="os-panel system-map-panel">
-      <PanelTitle label="SISTEME DE LUCRU" title="Domenii care se influenteaza reciproc" />
+      <PanelTitle label="SISTEME DE LUCRU" title="Module care susțin funcțiile naționale" />
       <div className="system-card-grid">{cards.map((card) => <button className="system-card" key={card.id} onClick={() => onSelect(card.id)}>
         <div><span>{card.code}</span><span className="system-arrow">↗</span></div><h3>{card.title}</h3><p>{card.detail}</p><small><span className="status-dot gray" />{card.state}</small>
       </button>)}</div>
@@ -262,11 +284,12 @@ function Overview({ onSelect, onOpenWorkflow }: { onSelect: (id: ModuleId) => vo
         ["D04 · D12", "Preturi si cos de baza", "Tarife publice + serii de piata licentiate", "prices"],
         ["D09 · D10", "Capacitate profesionala", "Registre profesionale + agregate de la unitati", "people"],
         ["D04 · D09", "Posturi si competente", "Anunturi de angajare verificabile si programe de formare", "jobs"],
+        ["D04 · D07", "Viabilitatea noilor afaceri", "Costuri, comparabile de preț, cerere și aprobări", "enterprise"],
         ["D04 · D07", "Agricultura si lanturi", "Productie, depozitare, inputuri si comert agregat", "food"],
         ["D05 · D06", "Cerere pentru servicii", "Accesari agregate, program, asteptare si accesibilitate", "time"]
       ].map(([domains, item, needed, target]) => <button className="integration-row" key={item} onClick={() => onSelect(target as ModuleId)}><span className="integration-domain">{domains}</span><strong>{item}</strong><span>{needed}</span><em>Neconectat</em><b>→</b></button>)}</div>
     </section>
-    <section className="os-panel launch-panel"><div><p className="os-eyebrow">PARTICIPARE CIVICA</p><h2>Semnal → dezbatere → proiect → evaluare</h2><p>O imagine nationala utila trebuie legata de discutii cu dovezi si de livrarea verificabila a serviciilor.</p></div><div className="launch-actions"><button className="button button-primary" onClick={() => onSelect("debates")}>Deschide dezbaterile</button><button className="button button-outline" onClick={() => onSelect("domains")}>Toate domeniile</button><button className="button button-outline" onClick={onOpenWorkflow}>Probleme si proiecte</button></div></section>
+    <section className="os-panel launch-panel"><div><p className="os-eyebrow">DE LA OBSERVAȚIE LA CAPACITATE REALĂ</p><h2>Semnal → dezbatere → echipă → rezultat verificat</h2><p>O nevoie devine lucrare numai cu un proprietar responsabil, mandat, buget, competențe potrivite și rezultat evaluat.</p></div><div className="launch-actions"><button className="button button-primary" onClick={() => onSelect("people")}>Explorează potrivirile de competențe</button><button className="button button-outline" onClick={() => onSelect("enterprise")}>Simulează o afacere</button><button className="button button-outline" onClick={onOpenWorkflow}>Probleme si proiecte</button></div></section>
   </>;
 }
 
@@ -341,27 +364,6 @@ function ArgumentColumn({ title, side, arguments: items, selectedId, onSelectArg
 
 function ReviewDimension({ label, value, tone }: { label: string; value: string; tone: string }) {
   return <div className={`review-dimension tone-${tone}`}><span>{label}</span><strong>{value}</strong></div>;
-}
-
-const specialists = [
-  { group: "Sanatate", specialty: "Cardiologie", people: "2.4k", places: "42 judete", gap: "Acoperirea regionala trebuie validata" },
-  { group: "Sanatate", specialty: "Neurologie", people: "0.8k", places: "31 judete", gap: "Acces mai redus in zone rurale" },
-  { group: "Sanatate", specialty: "Pediatrie", people: "1.6k", places: "40 judete", gap: "Disponibilitatea pe ture lipseste" },
-  { group: "Inginerie", specialty: "Inginerie civila", people: "18k", places: "42 judete", gap: "Proiectele locale nu sunt aliniate" },
-  { group: "Inginerie", specialty: "Software si date", people: "12k", places: "42 judete", gap: "Competențe eterogene" },
-  { group: "Inginerie", specialty: "Energie si industrial", people: "7k", places: "38 judete", gap: "Cerere viitoare necartografiata" }
-];
-
-function SpecialistCapacity() {
-  const [filter, setFilter] = useState("Toate");
-  const rows = specialists.filter((item) => filter === "Toate" || item.group === filter);
-  return <>
-    <ModuleHeading eyebrow="D09 DEZVOLTARE UMANA · D04 ECONOMIE" title="Capacitatea de specialitate" copy="O vedere agregata a competentelor si serviciilor profesionale necesare pentru planificare, formare si continuitate. Nu este un registru de persoane si nu estimeaza calitatea unui individ." />
-    <div className="privacy-strip"><strong>Model de date recomandat:</strong> numaratori agregate dupa specialitate, regiune si interval; sursa si definitie vizibile. Datele individuale raman la organismele care le detin legal.</div>
-    <div className="module-toolbar"><div className="segmented-filter">{["Toate", "Sanatate", "Inginerie"].map((group) => <button key={group} className={filter === group ? "active" : ""} onClick={() => setFilter(group)}>{group}</button>)}</div><span className="status-chip status-chip-warn">NUMERE FICTIVE · FARA SURSA</span></div>
-    <div className="capacity-table-wrap"><table className="data-table"><thead><tr><th>Grup</th><th>Specialitate</th><th>Stoc demo</th><th>Acoperire</th><th>Necunoscuta operationala</th></tr></thead><tbody>{rows.map((item) => <tr key={item.specialty}><td>{item.group}</td><td><strong>{item.specialty}</strong></td><td className="demo-number">{item.people}</td><td>{item.places}</td><td>{item.gap}</td></tr>)}</tbody></table></div>
-    <div className="three-note-grid"><InfoCard title="Definitie" copy="Clarifica daca masori persoane autorizate, echivalent norma intreaga, locuri de munca sau ore disponibile. Nu le amesteca." /><InfoCard title="Pipelines" copy="Leaga absolvirea, recunoasterea calificarii si posturile deschise prin statistici agregate si date cu actualizare indicata." /><InfoCard title="Limita" copy="Un deficit estimat poate cere analiza si formare; nu poate asigna automat o persoana, scoala sau unitate." /></div>
-  </>;
 }
 
 const prices = [
