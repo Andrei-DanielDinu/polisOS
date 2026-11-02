@@ -1,4 +1,5 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
+import { DomainWorkbench } from "./DomainWorkbench";
 
 type ModuleId = "overview" | "domains" | "debates" | "people" | "prices" | "jobs" | "food" | "supply" | "tourism" | "time";
 type Side = "PRO" | "CON";
@@ -192,7 +193,7 @@ export function ControlRoom({ canParticipate, onEnterDemo, onOpenWorkflow }: {
 
       <div className="os-workspace">
         {activeModule === "overview" && <Overview onSelect={setActiveModule} onOpenWorkflow={onOpenWorkflow} />}
-        {activeModule === "domains" && <DomainDirectory />}
+        {activeModule === "domains" && <DomainWorkbench onOpenModule={(id) => setActiveModule(id)} onOpenWorkflow={onOpenWorkflow} />}
         {activeModule === "debates" && <Debates debates={debates} activeDebate={activeDebate} onSelectDebate={setActiveDebateId} onAddArgument={addArgument} onSupport={toggleSupport} onResetDemo={resetDebateData} canParticipate={canParticipate} onEnterDemo={onEnterDemo} />}
         {activeModule === "people" && <SpecialistCapacity />}
         {activeModule === "prices" && <PriceObservatory />}
@@ -266,44 +267,6 @@ function Overview({ onSelect, onOpenWorkflow }: { onSelect: (id: ModuleId) => vo
       ].map(([domains, item, needed, target]) => <button className="integration-row" key={item} onClick={() => onSelect(target as ModuleId)}><span className="integration-domain">{domains}</span><strong>{item}</strong><span>{needed}</span><em>Neconectat</em><b>→</b></button>)}</div>
     </section>
     <section className="os-panel launch-panel"><div><p className="os-eyebrow">PARTICIPARE CIVICA</p><h2>Semnal → dezbatere → proiect → evaluare</h2><p>O imagine nationala utila trebuie legata de discutii cu dovezi si de livrarea verificabila a serviciilor.</p></div><div className="launch-actions"><button className="button button-primary" onClick={() => onSelect("debates")}>Deschide dezbaterile</button><button className="button button-outline" onClick={() => onSelect("domains")}>Toate domeniile</button><button className="button button-outline" onClick={onOpenWorkflow}>Probleme si proiecte</button></div></section>
-  </>;
-}
-
-const countryDomains = [
-  ["D01", "Identity and access", "Authentication, permissions, consent and account recovery", "Foundation scaffold"],
-  ["D02", "Institutions", "Mandates, service owners, responsibilities and public reporting", "Blueprint"],
-  ["D03", "Governance and deliberation", "Topics, consultation, arguments and accountable decisions", "Debate UI prototype"],
-  ["D04", "Economy", "Work, enterprises, agriculture, industry, services, tourism and trade", "Sample indicators"],
-  ["D05", "Public services", "Health, education, housing, mobility and social support access", "Service view proposal"],
-  ["D06", "Infrastructure", "Transport, utilities, connectivity, assets and maintenance", "Blueprint"],
-  ["D07", "Supply chains", "Resource inputs, production, logistics, imports and exports", "Chain UI prototype"],
-  ["D08", "Environment", "Extraction impacts, emissions, pollution, circularity and repair", "Blueprint"],
-  ["D09", "Human development", "Education, health pathways, skills, workforce and inclusion", "Capacity UI prototype"],
-  ["D10", "Data and knowledge", "Definitions, provenance, sources, research and corrections", "Catalog specification"],
-  ["D11", "AI decision support", "Bounded analysis, source-linked findings and human correction", "Review rubric only"],
-  ["D12", "Measurement and evaluation", "Baselines, indicators, uncertainty and outcome evaluation", "Indicator specification"],
-  ["D13", "Transparency and audit", "Decision trails, procurement visibility and independent review", "Blueprint"],
-  ["D14", "Process and administration", "Applications, workflow routing, permits and appeals", "Problem workflow scaffold"],
-  ["D15", "Simulation and digital twin", "Scenario modelling, sensitivity and intervention comparison", "Blueprint"],
-  ["D16", "Citizen interface", "Accessible dashboards, discussion, services and corrections", "Control room prototype"],
-  ["D17", "Public finance", "Budgets, revenue, spending, procurement and fiscal outcomes", "Blueprint"],
-  ["D18", "Justice and jurisprudence", "Legal information, process navigation and lawful referral", "Blueprint"],
-  ["D19", "Defense and national security", "Civil preparedness and safe, authorized high-level reporting", "Restricted design"],
-  ["D20", "Diplomacy and foreign relations", "Treaties, cooperation, external trade and data exchange", "Blueprint"]
-] as const;
-
-function DomainDirectory() {
-  const [query, setQuery] = useState("");
-  const visibleDomains = countryDomains.filter(([, name, remit]) => `${name} ${remit}`.toLowerCase().includes(query.toLowerCase()));
-  return <>
-    <ModuleHeading eyebrow="D01–D20 · SERVICE OWNERSHIP MAP" title="Tara este o retea de sisteme" copy="Fiecare domeniu are propriul responsabil, date si feedback loop. Harta separa ce este deja prototipat de ce exista numai in blueprint." />
-    <div className="os-data-warning"><strong>Stare reala a acestei versiuni:</strong> niciunul dintre aceste domenii nu este conectat la o sursa nationala operationala. Etichetele descriu nivelul software din acest repository.</div>
-    <label className="domain-search"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cauta domeniu sau responsabilitate" /></label>
-    <div className="domain-directory-grid">{visibleDomains.map(([code, name, remit, phase]) => <article className="domain-tile" key={code}>
-      <div><span className="domain-code">{code}</span><span className={`phase-chip ${phase.toLowerCase().includes("prototype") || phase.toLowerCase().includes("scaffold") ? "phase-demo" : ""}`}>{phase}</span></div>
-      <h3>{name}</h3><p>{remit}</p><small><span className="status-dot gray" /> Sursa nationala operationala neconectata</small>
-    </article>)}</div>
-    <p className="panel-footnote">Blueprint-ul complet pentru fiecare domeniu este in `docs/domains/D01–D20`. Un domeniu trece la operare numai dupa ce are serviciu proprietar, sursa permisa, stack record, siguranta, finantare si suport.</p>
   </>;
 }
 

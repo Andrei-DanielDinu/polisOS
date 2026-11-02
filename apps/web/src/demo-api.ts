@@ -157,6 +157,7 @@ const publicStatuses = new Set<ProblemStatus>(["DISCUSSION", "OPTIONS", "PROJECT
 export function resetDemoData() {
   localStorage.removeItem(storageKey);
   localStorage.removeItem("polisos.demo-debates.v1");
+  localStorage.removeItem("polisos.domain-workbench.v1");
 }
 
 export const demoApi = {
