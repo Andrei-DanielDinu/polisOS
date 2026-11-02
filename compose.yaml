@@ -1,0 +1,158 @@
+name: polisos-local
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Copy .env.example to .env and set local values}
+      PROBLEM_DB_PASSWORD: ${PROBLEM_DB_PASSWORD:?Set PROBLEM_DB_PASSWORD in .env}
+      PROJECT_DB_PASSWORD: ${PROJECT_DB_PASSWORD:?Set PROJECT_DB_PASSWORD in .env}
+      KEYCLOAK_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Set KEYCLOAK_DB_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres-init.sh:/docker-entrypoint-initdb.d/01-polisos-init.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [polisos]
+
+  kafka:
+    image: apache/kafka:4.0.0
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks: [polisos]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak_api
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Set KEYCLOAK_DB_PASSWORD in .env}
+      KC_HEALTH_ENABLED: "true"
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:?Set KEYCLOAK_ADMIN_USERNAME in .env}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Set KEYCLOAK_ADMIN_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./infra/keycloak/polisos-realm.json:/opt/keycloak/data/import/polisos-realm.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [polisos]
+
+  kafka-init:
+    image: apache/kafka:4.0.0
+    entrypoint: ["/bin/bash", "-ec"]
+    command:
+      - |
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic polis.problem.status.v1 --partitions 3 --replication-factor 1
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic polis.project.status.v1 --partitions 3 --replication-factor 1
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks: [polisos]
+
+  problem-api:
+    build:
+      context: .
+      dockerfile: infra/dev.Dockerfile
+    working_dir: /workspace
+    command: ["sh", "-c", "npm run db:generate --workspace=@polisos/problem-api && npm run db:push --workspace=@polisos/problem-api && npm run dev --workspace=@polisos/problem-api"]
+    environment:
+      DATABASE_URL: postgresql://problem_api:${PROBLEM_DB_PASSWORD:?Set PROBLEM_DB_PASSWORD in .env}@postgres:5432/problem_service?schema=public
+      KAFKA_BROKERS: kafka:9092
+      OIDC_ISSUER: http://localhost:8080/realms/polisos
+      OIDC_JWKS_URI: http://keycloak:8080/realms/polisos/protocol/openid-connect/certs
+      OIDC_CLIENT_ID: polisos-web
+      WEB_ORIGIN: http://localhost:5173
+      PORT: 4101
+    ports:
+      - "127.0.0.1:4101:4101"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      keycloak:
+        condition: service_started
+    networks: [polisos]
+
+  project-api:
+    build:
+      context: .
+      dockerfile: infra/dev.Dockerfile
+    working_dir: /workspace
+    command: ["sh", "-c", "npm run db:generate --workspace=@polisos/project-api && npm run db:push --workspace=@polisos/project-api && npm run dev --workspace=@polisos/project-api"]
+    environment:
+      DATABASE_URL: postgresql://project_api:${PROJECT_DB_PASSWORD:?Set PROJECT_DB_PASSWORD in .env}@postgres:5432/project_service?schema=public
+      KAFKA_BROKERS: kafka:9092
+      OIDC_ISSUER: http://localhost:8080/realms/polisos
+      OIDC_JWKS_URI: http://keycloak:8080/realms/polisos/protocol/openid-connect/certs
+      OIDC_CLIENT_ID: polisos-web
+      WEB_ORIGIN: http://localhost:5173
+      PORT: 4102
+    ports:
+      - "127.0.0.1:4102:4102"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      keycloak:
+        condition: service_started
+    networks: [polisos]
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/dev.Dockerfile
+    working_dir: /workspace
+    command: ["npm", "run", "dev", "--workspace=@polisos/web", "--", "--host", "0.0.0.0"]
+    environment:
+      VITE_PROBLEM_API: http://localhost:4101
+      VITE_PROJECT_API: http://localhost:4102
+      VITE_OIDC_AUTHORITY: http://localhost:8080/realms/polisos
+      VITE_OIDC_CLIENT_ID: polisos-web
+    ports:
+      - "127.0.0.1:5173:5173"
+    depends_on:
+      - problem-api
+      - project-api
+      - keycloak
+    networks: [polisos]
+
+networks:
+  polisos:
+
+volumes:
+  postgres-data:
+  kafka-data:
+

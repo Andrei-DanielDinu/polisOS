@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/.prisma/polisos-problem-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProblemStatus {
+  SUBMITTED
+  TRIAGE
+  NEEDS_EVIDENCE
+  UNDER_REVIEW
+  DISCUSSION
+  OPTIONS
+  PROJECT_PROPOSED
+  CLOSED
+}
+
+enum Visibility {
+  PUBLIC
+  PSEUDONYMOUS
+  PRIVATE
+}
+
+enum EvidenceConfidence {
+  LOW
+  MEDIUM
+  HIGH
+  UNASSESSED
+}
+
+enum AppealStatus {
+  FILED
+  IN_REVIEW
+  UPHELD
+  RETURNED_FOR_REVIEW
+  DISMISSED
+}
+
+model Problem {
+  id          String        @id @default(uuid()) @db.Uuid
+  title       String        @db.VarChar(160)
+  summary     String        @db.VarChar(3000)
+  sector      String        @db.VarChar(48)
+  region      String        @db.VarChar(100)
+  visibility  Visibility
+  consentVersion String     @db.VarChar(32)
+  consentedAt DateTime      @default(now())
+  status      ProblemStatus @default(SUBMITTED)
+  authorSub   String        @db.VarChar(128)
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  evidence    Evidence[]
+  options     SolutionOption[]
+  reviews     ReviewEntry[]
+  appeals     Appeal[]
+
+  @@index([status, createdAt])
+  @@index([sector, region])
+}
+
+model Evidence {
+  id          String             @id @default(uuid()) @db.Uuid
+  problemId   String             @db.Uuid
+  sourceName  String             @db.VarChar(160)
+  sourceUrl   String?            @db.VarChar(2048)
+  description String             @db.VarChar(1500)
+  confidence  EvidenceConfidence @default(UNASSESSED)
+  visibility  Visibility         @default(PUBLIC)
+  consentVersion String          @db.VarChar(32)
+  consentedAt DateTime           @default(now())
+  submittedBy String             @db.VarChar(128)
+  createdAt   DateTime           @default(now())
+  problem     Problem            @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId, createdAt])
+}
+
+model SolutionOption {
+  id              String    @id @default(uuid()) @db.Uuid
+  problemId       String    @db.Uuid
+  title           String    @db.VarChar(160)
+  summary         String    @db.VarChar(2000)
+  expectedOutcome String    @db.VarChar(1200)
+  riskNotes       String    @db.VarChar(1200)
+  createdBySub    String    @db.VarChar(128)
+  createdAt       DateTime  @default(now())
+  problem         Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId, createdAt])
+}
+
+model ReviewEntry {
+  id          String        @id @default(uuid()) @db.Uuid
+  problemId   String        @db.Uuid
+  reviewerSub String        @db.VarChar(128)
+  fromStatus  ProblemStatus
+  toStatus    ProblemStatus
+  reason      String        @db.VarChar(1200)
+  createdAt   DateTime      @default(now())
+  problem     Problem       @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId, createdAt])
+}
+
+model Appeal {
+  id          String       @id @default(uuid()) @db.Uuid
+  problemId   String       @db.Uuid
+  filedBySub  String       @db.VarChar(128)
+  reason      String       @db.VarChar(2000)
+  status      AppealStatus @default(FILED)
+  decision    String?      @db.VarChar(1200)
+  decidedBySub String?     @db.VarChar(128)
+  createdAt   DateTime     @default(now())
+  decidedAt   DateTime?
+  problem     Problem      @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId, createdAt])
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid()) @db.Uuid
+  topic       String    @db.VarChar(200)
+  eventType   String    @db.VarChar(200)
+  aggregateId String    @db.VarChar(128)
+  payload     Json
+  attempts    Int       @default(0)
+  lastError   String?   @db.VarChar(800)
+  createdAt   DateTime  @default(now())
+  publishedAt DateTime?
+
+  @@index([publishedAt, createdAt])
+}
+

@@ -1,0 +1,50 @@
+{
+  "realm": "polisos",
+  "enabled": true,
+  "displayName": "PolisOS Local",
+  "registrationAllowed": true,
+  "resetPasswordAllowed": true,
+  "rememberMe": false,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "clients": [
+    {
+      "clientId": "polisos-web",
+      "name": "PolisOS Web",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5173/*"
+      },
+      "protocol": "openid-connect"
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "reviewer", "description": "Can triage and review problem reports" },
+      { "name": "project-owner", "description": "Can record project authorization after human/legal review" }
+    ]
+  },
+  "users": [
+    {
+      "username": "demo.citizen",
+      "enabled": true,
+      "email": "demo.citizen@polisos.local",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Citizen",
+      "credentials": [
+        { "type": "password", "value": "PolisOS-Demo-Only-2026!", "temporary": false }
+      ]
+    }
+  ]
+}
+

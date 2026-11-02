@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://polisos.local/contracts/project-proposed.v1.schema.json",
+  "title": "ProjectProposedV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "eventType", "occurredAt", "projectId", "problemId", "status"],
+  "properties": {
+    "eventId": { "type": "string", "format": "uuid" },
+    "eventType": { "const": "polis.project.proposed.v1" },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "projectId": { "type": "string", "format": "uuid" },
+    "problemId": { "type": "string", "format": "uuid" },
+    "status": { "const": "PROPOSED" }
+  }
+}
+

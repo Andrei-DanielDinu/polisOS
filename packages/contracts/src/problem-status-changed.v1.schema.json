@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://polisos.local/contracts/problem-status-changed.v1.schema.json",
+  "title": "ProblemStatusChangedV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "eventType", "occurredAt", "problemId", "status", "sector", "region"],
+  "properties": {
+    "eventId": { "type": "string", "format": "uuid" },
+    "eventType": { "const": "polis.problem.status-changed.v1" },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "problemId": { "type": "string", "format": "uuid" },
+    "status": { "enum": ["SUBMITTED", "TRIAGE", "NEEDS_EVIDENCE", "UNDER_REVIEW", "DISCUSSION", "OPTIONS", "PROJECT_PROPOSED", "CLOSED"] },
+    "title": { "type": "string", "maxLength": 160 },
+    "summary": { "type": "string", "maxLength": 3000 },
+    "sector": { "type": "string", "maxLength": 48 },
+    "region": { "type": "string", "maxLength": 100 }
+  }
+}
+

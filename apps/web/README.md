@@ -1,0 +1,10 @@
+# Citizen Interface
+
+The React application now opens to a national operating-picture prototype with a searchable D01–D20 domain directory and separate workspaces for a control-room overview, structured pro/con debates, specialist capacity, prices and affordability, jobs and training, agriculture/food, trade and product chains, tourism, and public-service time planning. The earlier problem-to-project flow remains available as its own workspace with guest browsing, optional Keycloak sign-in, problem submission, evidence/options, review, appeals, projects, and milestones.
+
+All country indicators, debate arguments/support counts, AI-review labels, jobs, chain data, price amounts, demand curves and related content shown in the operating-picture preview are illustrative fiction. No national data source, AI model, specialist register, price service, job feed or supply-chain service is connected. Browser-local demo arguments/supports are not sent to an API. The debate AI panel is a proposed review rubric with prewritten example labels, not model output. These limits are also described in the [operating-picture blueprint](../../docs/system/operating-picture/README.md).
+
+In Vite development mode only, the “Demo cetatean” button opens a local preview with fictional sample data saved in browser storage; it does not authenticate with Keycloak or call the domain APIs. The imported Keycloak example account is `demo.citizen` / `PolisOS-Demo-Only-2026!` and works only when the local Docker services are running.
+
+The interface is Romanian-first and keeps account names and email out of public records. It uses React/TypeScript/Vite (MIT for React; audit exact dependency licenses), OIDC authorization code with PKCE, and REST APIs. The prototype makes no claim of monitoring or controlling current Romanian services. Hosting, moderation, translation, accessibility audits, support and security response are recurring costs. Domain APIs remain replaceable; the interface stores no authoritative domain state.
+

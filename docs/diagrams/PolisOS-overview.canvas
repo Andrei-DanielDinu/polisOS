@@ -1,0 +1,106 @@
+{
+  "nodes": [
+    {
+      "id": "polisos",
+      "type": "text",
+      "text": "# PolisOS\n\nRomania civic operating-system blueprint\n\nA shared coordination and feedback layer. Voluntary, rights-bound, nationally accessible.",
+      "x": 0,
+      "y": 220,
+      "width": 300,
+      "height": 170,
+      "color": "4"
+    },
+    {
+      "id": "citizens",
+      "type": "text",
+      "text": "# Citizens\n\nRights, accessibility, opt-in data, scoped project roles.\n\n[Citizen rights](../citizens/README.md)",
+      "x": 420,
+      "y": 0,
+      "width": 300,
+      "height": 170,
+      "color": "5"
+    },
+    {
+      "id": "governance",
+      "type": "text",
+      "text": "# Authority\n\nProjects have accountable owners. National governance proposal requires legal review.\n\n[Governance](../governance/README.md)",
+      "x": 420,
+      "y": 220,
+      "width": 300,
+      "height": 190,
+      "color": "3"
+    },
+    {
+      "id": "workflow",
+      "type": "text",
+      "text": "# Problem to project\n\nObserve → evidence → review → options → authorize → deliver → evaluate.\n\n[First workflow](../first-workflow/README.md)",
+      "x": 850,
+      "y": 220,
+      "width": 330,
+      "height": 190,
+      "color": "1"
+    },
+    {
+      "id": "data",
+      "type": "text",
+      "text": "# Data and measurement\n\nOpt-in citizen data; separate account security; aggregate outcomes; explicit uncertainty.\n\n[Data and measurement](../data-and-measurement/README.md)",
+      "x": 850,
+      "y": 0,
+      "width": 330,
+      "height": 180,
+      "color": "6"
+    },
+    {
+      "id": "domains",
+      "type": "text",
+      "text": "# D01–D20\n\nNational service and policy domains, each with an observation and feedback record.\n\n[Domain map](../domains/README.md)",
+      "x": 1270,
+      "y": 220,
+      "width": 320,
+      "height": 180,
+      "color": "2"
+    },
+    {
+      "id": "technology",
+      "type": "text",
+      "text": "# Technology\n\nFOSS direction, microservices, Kafka, polyglot services, containers first.\n\n[Technology](../technology/README.md)",
+      "x": 420,
+      "y": 500,
+      "width": 320,
+      "height": 180,
+      "color": "4"
+    },
+    {
+      "id": "roadmap",
+      "type": "text",
+      "text": "# Roadmap\n\nBlueprint and contracts before implementation; national access, bounded projects.\n\n[Roadmap](../roadmap/README.md)",
+      "x": 850,
+      "y": 500,
+      "width": 330,
+      "height": 180,
+      "color": "1"
+    },
+    {
+      "id": "operating-picture",
+      "type": "text",
+      "text": "# National operating picture\n\nDebates, specialists, prices, jobs, agriculture, supply chains, tourism, service hours and delivery outcomes. Prototype data is synthetic; no national feeds are connected.\n\n[System services](../system/operating-picture/README.md)",
+      "x": 1270,
+      "y": 500,
+      "width": 360,
+      "height": 200,
+      "color": "6"
+    }
+  ],
+  "edges": [
+    { "id": "e1", "fromNode": "polisos", "toNode": "citizens", "fromSide": "right", "toSide": "left" },
+    { "id": "e2", "fromNode": "polisos", "toNode": "governance", "fromSide": "right", "toSide": "left" },
+    { "id": "e3", "fromNode": "citizens", "toNode": "data", "fromSide": "right", "toSide": "left" },
+    { "id": "e4", "fromNode": "governance", "toNode": "workflow", "fromSide": "right", "toSide": "left" },
+    { "id": "e5", "fromNode": "workflow", "toNode": "domains", "fromSide": "right", "toSide": "left" },
+    { "id": "e6", "fromNode": "governance", "toNode": "technology", "fromSide": "bottom", "toSide": "top" },
+    { "id": "e7", "fromNode": "workflow", "toNode": "roadmap", "fromSide": "bottom", "toSide": "top" },
+    { "id": "e8", "fromNode": "data", "toNode": "domains", "fromSide": "right", "toSide": "left", "label": "bounded evidence" },
+    { "id": "e9", "fromNode": "domains", "toNode": "operating-picture", "fromSide": "bottom", "toSide": "top", "label": "service views" }
+  ]
+}
+

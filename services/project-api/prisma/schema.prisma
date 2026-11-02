@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/.prisma/polisos-project-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProjectStatus {
+  PROPOSED
+  ACTIVE
+  COMPLETED
+  STOPPED
+}
+
+enum ProjectRoleName {
+  PROJECT_LEAD
+  CONTRIBUTOR
+  SPECIALIST
+  WORKSTREAM_LEAD
+}
+
+enum MilestoneStatus {
+  REPORTED
+  REVIEWED
+  NEEDS_CORRECTION
+}
+
+enum ProjectAppealStatus {
+  FILED
+  IN_REVIEW
+  UPHELD
+  RETURNED_FOR_REVIEW
+  DISMISSED
+}
+
+model ReviewableProblem {
+  problemId     String   @id @db.Uuid
+  title         String?  @db.VarChar(160)
+  summary       String?  @db.VarChar(3000)
+  sector        String   @db.VarChar(48)
+  region        String   @db.VarChar(100)
+  status        String   @db.VarChar(32)
+  sourceEventId String   @unique @db.Uuid
+  updatedAt     DateTime @updatedAt
+}
+
+model Project {
+  id                  String        @id @default(uuid()) @db.Uuid
+  problemId           String        @db.Uuid
+  problemTitle        String        @db.VarChar(160)
+  problemSummary      String        @db.VarChar(3000)
+  sector              String        @db.VarChar(48)
+  region              String        @db.VarChar(100)
+  title               String        @db.VarChar(160)
+  publicSummary       String        @db.VarChar(2000)
+  status              ProjectStatus @default(PROPOSED)
+  institutionName     String?       @db.VarChar(200)
+  authorityReference  String?       @db.VarChar(500)
+  fundingReference    String?       @db.VarChar(500)
+  authorizationReason String?       @db.VarChar(2000)
+  authorizedBySub     String?       @db.VarChar(128)
+  authorizedAt        DateTime?
+  createdBySub        String        @db.VarChar(128)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  roles               ProjectRole[]
+  milestones          Milestone[]
+  appeals             ProjectAppeal[]
+
+  @@index([status, createdAt])
+  @@index([problemId])
+}
+
+model ProjectRole {
+  id          String         @id @default(uuid()) @db.Uuid
+  projectId   String         @db.Uuid
+  personSub   String         @db.VarChar(128)
+  role        ProjectRoleName
+  scope       String         @db.VarChar(600)
+  expiresAt   DateTime
+  createdAt   DateTime       @default(now())
+  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, personSub])
+  @@index([projectId, expiresAt])
+}
+
+model Milestone {
+  id           String          @id @default(uuid()) @db.Uuid
+  projectId    String          @db.Uuid
+  title        String          @db.VarChar(160)
+  description  String          @db.VarChar(1600)
+  dueAt        DateTime?
+  evidenceUrl  String?         @db.VarChar(2048)
+  status       MilestoneStatus @default(REPORTED)
+  reportedBySub String         @db.VarChar(128)
+  reportedAt   DateTime        @default(now())
+  project      Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, reportedAt])
+}
+
+model ProjectAppeal {
+  id           String              @id @default(uuid()) @db.Uuid
+  projectId    String              @db.Uuid
+  filedBySub   String              @db.VarChar(128)
+  reason       String              @db.VarChar(2000)
+  status       ProjectAppealStatus @default(FILED)
+  decision     String?             @db.VarChar(1200)
+  decidedBySub String?             @db.VarChar(128)
+  createdAt    DateTime            @default(now())
+  decidedAt    DateTime?
+  project      Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid()) @db.Uuid
+  topic       String    @db.VarChar(200)
+  eventType   String    @db.VarChar(200)
+  aggregateId String    @db.VarChar(128)
+  payload     Json
+  attempts    Int       @default(0)
+  lastError   String?   @db.VarChar(800)
+  createdAt   DateTime  @default(now())
+  publishedAt DateTime?
+
+  @@index([publishedAt, createdAt])
+}
+
+model ProcessedEvent {
+  eventId     String   @id @db.Uuid
+  eventType   String   @db.VarChar(200)
+  processedAt DateTime @default(now())
+}
+

@@ -1,0 +1,26 @@
+{
+  "name": "polisos",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/web",
+    "services/problem-api",
+    "services/project-api",
+    "packages/contracts"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=@polisos/web",
+    "dev:problems": "npm run dev --workspace=@polisos/problem-api",
+    "dev:projects": "npm run dev --workspace=@polisos/project-api",
+    "build:web": "npm run build --workspace=@polisos/web",
+    "db:generate": "npm run db:generate --workspace=@polisos/problem-api && npm run db:generate --workspace=@polisos/project-api",
+    "typecheck": "npm run typecheck --workspace=@polisos/web && npm run typecheck --workspace=@polisos/problem-api && npm run typecheck --workspace=@polisos/project-api"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.2"
+    }
+  }
+}
+
