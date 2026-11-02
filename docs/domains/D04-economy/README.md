@@ -72,5 +72,7 @@ The economy view has distinct read models for a comparable essential-goods/servi
 
 The initial product basket should cover fuel, electricity, water, bread, pork, beef, tomatoes, potatoes, cabbage, carrots, waste disposal, public transport, rent, and ride-sharing. Each observation includes region, time, unit, product/service specification, quality, tax, promotion status, source, method, and revision. Individual receipt contributions are voluntary, minimized, and separable from identity; aggregation thresholds protect households and small businesses.
 
+The [citizen household balance canvas](../../citizens/household-balance/README.md) is a personal, user-entered illustration of affordability and estimated domestic/external spending. It is not a representative price index, a verified supply-chain trace, national accounts, or evidence of capital flight. The domain must not receive household line items or link them to identity without a separate opt-in purpose and reviewed data contract.
+
 Jobs and opportunities show active dates, verified publisher, skills, location, employment/training/project type, and application/source link. They are informational; PolisOS activity, debate stance, account profile, or problem-solving history must not become a hiring score. A national dashboard may inform scenario analysis; economic policy, public procurement, price controls, employment action and funding remain with competent legal institutions. See the [cross-domain service map](../../system/operating-picture/README.md).
 

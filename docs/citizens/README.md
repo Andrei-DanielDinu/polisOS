@@ -55,6 +55,8 @@ flowchart LR
   I --> J[Correct, withdraw, appeal, export, or leave]
 ```
 
+The optional [household balance canvas](household-balance/README.md) is a browser-local budgeting sandbox. It illustrates a person's entered income, taxes, purchases, service-use estimates and domestic/external spending assumptions; it does not score citizens or connect to tax, benefit, health, identity, or employment records.
+
 ## Roles and authority
 
 Citizens can submit, discuss, review, volunteer, or hold scoped project roles. Role selection must have published requirements, conflict-of-interest disclosure, time limits, peer review, and a challenge route. A project role grants only the authority specified in that project charter. It does not confer social rank, public office, or authority over unrelated services.

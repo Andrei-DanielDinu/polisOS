@@ -3,6 +3,7 @@ import { api, Problem, ProblemAppeal, ProblemStatus, Project, ProjectAppeal } fr
 import { clearDemoSession, createDemoUser, finishSignIn, getRoles, hasDemoSession, isDemoUser, signIn, signOut, User, userManager } from "./auth";
 import { resetDemoData } from "./demo-api";
 import { ControlRoom } from "./ControlRoom";
+import { CitizenBalance } from "./CitizenBalance";
 
 const statusLabels: Record<ProblemStatus, string> = {
   SUBMITTED: "Trimis spre triere",
@@ -44,7 +45,7 @@ function formatDate(value: string) {
 }
 
 function App() {
-  const [page, setPage] = useState<"national" | "workflow">("national");
+  const [page, setPage] = useState<"national" | "workflow" | "citizen">("national");
   const [user, setUser] = useState<User | null>(null);
   const [problems, setProblems] = useState<Problem[]>([]);
   const [myProblems, setMyProblems] = useState<Problem[]>([]);
@@ -251,6 +252,7 @@ function App() {
         </a>
         <nav className="top-nav" aria-label="Navigare principala">
           <button className={page === "national" ? "active" : ""} onClick={() => setPage("national")}>Sisteme nationale</button>
+          <button className={page === "citizen" ? "active" : ""} onClick={() => setPage("citizen")}>Economia cetățeanului</button>
           <button className={page === "workflow" ? "active" : ""} onClick={() => setPage("workflow")}>Probleme si proiecte</button>
         </nav>
         <div className="account-area">
@@ -280,7 +282,7 @@ function App() {
         </div>
       </header>
 
-      {error && (page === "workflow" || !error.startsWith("Serviciile locale nu raspund.")) && <div className="notice notice-error" role="alert">{error}</div>}
+      {error && (page === "workflow" || (page === "national" && !error.startsWith("Serviciile locale nu raspund."))) && <div className="notice notice-error" role="alert">{error}</div>}
       {notice && <div className="notice notice-success" role="status">{notice}<button onClick={() => setNotice("")} aria-label="Inchide mesajul">×</button></div>}
 
       {page === "national" ? <ControlRoom
@@ -291,7 +293,7 @@ function App() {
           setNotice("Sesiune demo activa. Continutul adaugat ramane in acest browser.");
         }}
         onOpenWorkflow={() => setPage("workflow")}
-      /> : <main>
+      /> : page === "citizen" ? <CitizenBalance /> : <main>
         <section className="hero">
           <div className="hero-copy">
             <p className="eyebrow"><span className="eyebrow-dot" /> O platforma civica pentru Romania</p>
@@ -504,7 +506,7 @@ function App() {
           </section>
         </div>
       )}
-      <footer className="footer"><a className="brand" href="#"><span className="brand-mark">P</span><span>polis<span className="brand-os">OS</span></span></a><p>O infrastructura civica voluntara, transparenta si revizuibila.</p><button onClick={() => setPage(page === "national" ? "workflow" : "national")}>{page === "national" ? "Probleme si proiecte" : "Sisteme nationale"} <span aria-hidden="true">↑</span></button></footer>
+      <footer className="footer"><a className="brand" href="#"><span className="brand-mark">P</span><span>polis<span className="brand-os">OS</span></span></a><p>O infrastructura civica voluntara, transparenta si revizuibila.</p><button onClick={() => setPage(page === "national" ? "citizen" : page === "citizen" ? "workflow" : "national")}>{page === "national" ? "Economia cetățeanului" : page === "citizen" ? "Probleme si proiecte" : "Sisteme nationale"} <span aria-hidden="true">↑</span></button></footer>
     </div>
   );
 }

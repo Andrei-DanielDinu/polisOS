@@ -68,3 +68,5 @@ Where a lawful public source exists, the dashboard may link a decision and autho
 
 The view is read-only and cannot approve a transfer or release funds. Procurement transparency must protect legally confidential, personal, security-sensitive and genuinely proprietary information while exposing the public decision and its accountable owner. The cross-domain lifecycle is in the [operating-picture blueprint](../../system/operating-picture/README.md).
 
+The [citizen household balance canvas](../../citizens/household-balance/README.md) accepts a manual tax/contribution amount only. It does not calculate liability, determine eligibility, or transmit individual financial data to this domain.
+
